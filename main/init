@@ -1,1 +1,8 @@
-
+#stdio.h
+print = print.c
+int = int.c
+get = get.c
+for = for.c
+equ = equ.c
+} = }.c
+ = .c
