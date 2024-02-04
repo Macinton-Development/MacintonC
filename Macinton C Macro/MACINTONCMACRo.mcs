@@ -1,0 +1,40 @@
+@init : init : ./io/ :
+
+[
+Functions:
+exit
+echo
+set
+for
+while
+if
+else
+ifel
+fi
+change
+remove
+]
+
+
+//macroses
+! : mode : int :
+! : name : var :
+! : include : 0 :
+! : condition : 0 :
+! : macros : 0 :
+! : macros_include : 0 :
+! : argument : 0 :
+
+//Function inits
+! : echo : printf(argument); :
+! : OUT : exit(argument); :
+! : set : mode name = include :
+! : IF : if(condition){ :
+! : ELSE : }else{ :
+! : IFEL : }else if(condition){ :
+! : FI : } :
+! : FOR : for(condition){ :
+! : WHILE : while(condition){ :
+! : change : #define macros macros_include :
+! : remove : #undef macros :
+$int : main : () : { :
