@@ -7,6 +7,7 @@ import sys, os
 
 c_commands = []
 macinton_c_commands = []
+modules_c = []
 modules_dir = ''
 
 def get_args(line:str):
@@ -14,7 +15,7 @@ def get_args(line:str):
     to_append = []
     is_string = 0
     for element in line:
-        if element == '"' or element == "'":
+        if element == '"':
             is_string = not is_string 
             to_append.append(element)
         else:
@@ -41,6 +42,10 @@ def replace_with_args(line:str, args:list):
             was_args += 1
     return string_array_sum(line_array)
 
+def block_launch(name:str):
+    with open('out.c', 'a') as append_block_launch:
+        append_block_launch.write(name + '()\n')
+
 def string_array_sum(array:list):
     out = ''
     for element in array:
@@ -48,23 +53,25 @@ def string_array_sum(array:list):
     return out
 
 def module_load(path_to_module_script:str, modules_dir:str):
-    global c_commands, macinton_c_commands
+    global c_commands, macinton_c_commands, modules_c
     with open(modules_dir + path_to_module_script) as module_script_reader:
         lines = module_script_reader.readlines()
     for line in lines:
-        if line[0] == '#':
+        if line[0] == '#' and (module := line[1:].replace('\n', '')) not in modules_c:
+            modules_c.append(module)
             with open('out.c', 'a') as append_include:
-                append_include.write('#include <' + line[1:].replace('\n', '') + '>\n')
+                append_include.write('#include <' + module + '>\n')
         else:
             line = line.split(' = ')
             macinton_c_commands.append(line[0].replace('\n', ''))
             with open(modules_dir + line[1].replace('\n', '')) as command_c:
                 c_commands.append(string_array_sum(command_c.readlines()) + '\n')    
-    
-             
+
 def compilation(file_path:str):
     global c_commands, macinton_c_commands, modules_dir
     is_commented = 0
+    is_block = 0
+    current_block = ''
     c_code = 0
     with open('out.c', 'w') as out_creation:
         pass
@@ -82,9 +89,27 @@ def compilation(file_path:str):
                 elif line[0] == '#' and not c_code:
                     with open('out.c', 'a') as append_to_out:
                         append_to_out.write(line[1:])
+                elif line[:2] == '->' and not is_block:
+                    is_block = 1
+                    with open('out.c', 'a') as append_to_out:
+                        append_to_out.write('void ' + line[2:] + '(void){\n')
+                elif line[:2] == '<-' and is_block:
+                    with open('out.c', 'a') as append_to_out:
+                        is_block = 0
+                        append_to_out.write('}\n')
+                elif line[0] == '?':
+                    with open('out.c', 'a') as append_to_out:
+                        args = get_args(line)
+                        append_to_out.write('if(' + args[0] + '){\n' + args[1].replace('\n', '') + '();\n}\n')
                 elif line[0] == '$':
                     with open('out.c', 'a') as append_to_out:
                         append_to_out.write(replace_with_args(line[1:], get_args(line)))
+                elif line[0] == '!':
+                    with open('out.c', 'a') as append_to_out:
+                        append_to_out.write(f'#define {get_args(line)[0]} {get_args(line)[1]}\n')
+                elif line[0] == '~':
+                    with open('out.c', 'a') as append_to_out:
+                        append_to_out.write(f'#undef {line[1:]}\n')
                 elif line[:2] == '//':
                     pass
                 elif line[0] == '[':
@@ -93,14 +118,21 @@ def compilation(file_path:str):
                     pass
                 else:
                     pass
-            else:
+            elif is_commented and not is_block:
                 if line[0] == ']':
                     is_commented = 0
+            else:
+                with open('out.c', 'a') as append_to_out:
+                    if line[:2] == '<-':
+                        is_block = 0
+                        append_to_out.write('}\n')
     
-if len(sys.argv) == 2:
-    compilation(sys.argv[1])
-    if os.path.getsize('out.c') > 0:
-        if sys.platform == 'win32':
-            os.system('gcc -o ' + string_array_sum(sys.argv[1].split('.')[:-1]) + '.exe ' + 'out.c')
-        else:
-            os.system('gcc -o' + string_array_sum(sys.argv[1].split('.')[:-1]) + ' out.c')
+if len(sys.argv) > 1:
+    compilation(sys.argv[1]) if sys.argv[1].lower() != '--help' else print('MacintonC 1.2 / Macinton 11\nFixed: Including one C library more than one time\nAdded: "->" and "<-" pointers\nAdded: --help and rm options\nAdded: ! pointer(equals to #define in C)\nAdded: ~ pointer(equals to #undef in C)\nJan2024')
+    if sys.argv[1].lower() != '--help':
+        if os.path.getsize('out.c') > 0:
+            if sys.platform == 'win32':
+                os.system('gcc -o ' + string_array_sum(sys.argv[1].split('.')[:-1]) + '.exe ' + 'out.c')
+            else:
+                os.system('gcc -o' + string_array_sum(sys.argv[1].split('.')[:-1]) + ' out.c')
+            os.remove('out.c') if len(sys.argv) == 3 and sys.argv[2].lower() == 'rm' else print('Check out.c to get the C code')
