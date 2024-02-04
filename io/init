@@ -1,0 +1,13 @@
+#stdio.h
+#stdlib.h
+print = print.c
+int = int.c
+equ = equ.c
+while = while.c
+stop = stop.c
+IF = IF.c
+ELSE = ELSE.c
+IFEL = IFEL.c
+FI = FI.c
+input = input.c
+SYSCALL = syscall.c
