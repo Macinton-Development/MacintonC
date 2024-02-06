@@ -1,21 +1,34 @@
 ### Macinton C 1.2 and it's dialect Macinton C Macro have been released!
 
 **New:**
+
 1. Macroses:
+
 1.1. Adding macros: `! : name : value :`
+
 1.2. Remove macros: `~name`
 
+
 2. New Pointers:
+
 2.1. `->name` - set function `name`
+
 2.2. `<-` - close function
 
+
 3. Compiler arguments:
+
 3.1. --help - shows info about current version
+
 3.2. rm - removes out.c after compilation
 
+
 **Fixed:**
+
 1. Parsing strings
+
 2. Including same C library from init
+
 
 ### BONUS
 
