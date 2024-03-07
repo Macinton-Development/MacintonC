@@ -22,7 +22,7 @@ def get_args(line:str):
             is_string = not is_string 
             to_append.append(element)
         else:
-            if element == ':':
+            if element == ':' and not is_string:
                 if len(to_append) > 0:
                     if to_append[0] == ' ' and to_append[-1] == ' ':
                         out.append(string_array_sum(to_append[1:-1]))
@@ -107,7 +107,8 @@ def compilation(file_path:str, out_file:str, creation:bool):
                     elif line[0] == '(':
                         about = get_args(line[1:])[0]
                         if about[0] not in watching:
-                            watching[about[0]] = [about[1], about[2]]
+                            watching[about[0]] = []
+                        watching[about[0]].append([about[1], about[2]])
                     elif line[0] == ')':
                         if line[1:].replace('\n', '') in watching:
                             watching.pop(line[1:].replace('\n', ''))
@@ -128,21 +129,22 @@ def compilation(file_path:str, out_file:str, creation:bool):
                         args = get_args(line)
                         append_to_out.write(replace_with_args(line[1:], args[0]))
                         if len(args) - 1 and args[0][0] in watching:
-                            append_to_out.write('if(' + args[0][0] + ' == ' + watching[args[0][0]][0] + '){\n' + watching[args[0][0]][1] + '();\n}\n')
+                            for element in watching[args[0][0]]:
+                                append_to_out.write('if(' + args[0][0] + ' == ' + element[0] + '){\n' + element[1] + '();\n}\n')
                     elif line[0] == '!':
-                        append_to_out.write(f'#define {get_args(line)[0][0]} {get_args(line)[0][1]}\n')
+                        append_to_out.write('#define ' + get_args(line)[0][0] + get_args(line)[0][1] + '\n')
                     elif line[0] == '~':
-                        append_to_out.write(f'#undef {line[1:]}\n')
+                        append_to_out.write('#undef ' + line[1:] + '\n')
                     elif line[0] == '%':
-                        append_to_out.write(f'#include "' + define_macinton_h_header(line[1:].replace('\n', '')) + '"\n')
+                        append_to_out.write(f'#include "' + define_macinton_h_header(line[1:].replace("\n", "")) + '"\n')
                     elif line[0] == '&':
-                        append_to_out.write(f'#ifdef {line[1:].replace('\n', '')}\n')
+                        append_to_out.write('#ifdef ' + line[1:].replace("\n", "\n") + '\n')
                     elif line[0] == '^':
-                        append_to_out.write(f'#else\n')
+                        append_to_out.write('#else\n')
                     elif line[0] == ';':
-                        append_to_out.write(f'#endif\n')
+                        append_to_out.write('#endif\n')
                     elif line[0] == '/':
-                        append_to_out.write(f'ifndef {line[1:].replace('\n', '')}\n')
+                        append_to_out.write('ifndef ' + line[1:].replace("\n", "") + '\n')
                     elif line[:2] == '//':
                         pass
                     elif line[0] == '[':
@@ -177,5 +179,5 @@ if len(sys.argv) > 1:
             else:
                 print('# #  ###\n# #  # #\n #   # #\n #   ### check the c code in out.c')
     else:
-        print('MacintonC 1.3 / Macinton 12\nAdded:\n1.Macroses:\n\t& - #ifdef\n\t^ - #else\n\t; - #endif\n\t/ - #ifndef\n2.Watchers:\n\tAdd - ( : name : value : todo :\n\t\t*todo - equals to ?\n\tDecline - )Name\n3.Headers:\n\tInclude %path/to/header/name.mch\n4.New arguments:\n\t? - out name(without .exe/.app!!!)\n03/04/2024 - Moscow\nMM/DD/YYYY\nThanks for using, check new versions on our github!')
+        print('MacintonC 1.3 / Macinton 12\nAdded:\n1.Macroses:\n\t& - #ifdef\n\t^ - #else\n\t; - #endif\n\t/ - #ifndef\n2.Watchers:\n\tAdd - ( : name : value : todo :\n\t\t*todo - equals to ?\n\tDecline - )Name\n3.Headers:\n\tInclude %path/to/header/name.mch\n4.New arguments:\n\t? - out name(without extension)\n\nFixed:\n\t1.Fixed parser\n\nVERSION: 1.3 / 12\nDATE:07/04/2024 - Moscow\n     MM/DD/YYYY   Location\n\nComment: Thanks for using, check new versions on our github!\n\t Thanks to GNU for GCC(which is using in compilation)')
     
