@@ -1,2 +1,2 @@
-python3 -m nuitka --standalone --lto=no $1.py
+python$2 -m nuitka --standalone --lto=no $1.py
 mv $1.dist/$1.bin $1
