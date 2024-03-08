@@ -179,5 +179,5 @@ if len(sys.argv) > 1:
             else:
                 print('# #  ###\n# #  # #\n #   # #\n #   ### check the c code in out.c')
     else:
-        print('MacintonC 1.3 / Macinton 12\nAdded:\n1.Macroses:\n\t& - #ifdef\n\t^ - #else\n\t; - #endif\n\t/ - #ifndef\n2.Watchers:\n\tAdd - ( : name : value : todo :\n\t\t*todo - equals to ?\n\tDecline - )Name\n3.Headers:\n\tInclude %path/to/header/name.mch\n4.New arguments:\n\t? - out name(without extension)\n\nFixed:\n\t1.Fixed parser\n\nVERSION: 1.3 / 12\nDATE:07/04/2024 - Moscow\n     MM/DD/YYYY   Location\n\nComment: Thanks for using, check new versions on our github!\n\t Thanks to GNU for GCC(which is using in compilation)')
+        print('MacintonC 1.3 / Macinton 12\nAdded:\n1.Macroses:\n\t& - #ifdef\n\t^ - #else\n\t; - #endif\n\t/ - #ifndef\n2.Watchers:\n\tAdd - ( : name : value : todo :\n\t\t*todo - equals to ?\n\tDecline - )Name\n3.Headers:\n\tInclude %path/to/header/name.mch\n4.New arguments:\n\t? - out name(without extension)\n\nFixed:\n\t1.Fixed parser\n\nVERSION: 1.3 / 12\nDATE:03/07/2024 - Moscow\n     MM/DD/YYYY   Location\n\nComment: Thanks for using, check new versions on our github!\n\t Thanks to GNU for GCC(which is using in compilation)')
     
