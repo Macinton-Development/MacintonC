@@ -18,7 +18,7 @@
 
         1. Add - ( : name : value : todo :
         
-              *todo - equals to ?\
+              *todo - equals to ?
         2. Decline - )Name
         
 3. Headers: Include %path/to/header/name.mch
