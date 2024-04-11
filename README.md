@@ -1,36 +1,20 @@
-# Macinton C 1.3
-**MacintonC 1.3 / Macinton 12**
-
-## Added:
-
-1. Macroses: 
-
-        1. & - #ifdef
-            
-        2. ^ - #else
-            
-        3. ; - #endif
-            
-        4. / - #ifndef
-            
-            
-2. Watchers:
-
-        1. Add - ( : name : value : todo :
-        
-              *todo - equals to ?
-        2. Decline - )Name
-        
-3. Headers: Include %path/to/header/name.mch
-4. 
-5. New arguments:
-
-        1.? - out name(without extension)
-
-**Fixed:**
-
-Fixed parserThanks for using, check new versions on our github!
+# Macinton C 1.4 preview
 
 
+## New:
 
-## Thanks to GNU for GCC(which is using in compilation)
+1. Built in commands will be renamed because it is very tough to learn this programming language
+
+2. BML - Better Markup Language(Using as Python module)
+
+3. BML supportage(using as compilation arguments)
+
+
+## Deleted:
+
+1. Compilation arguments in terminal is over
+
+
+## Bonus:
+
+1. Macinton C Macro is going to have a new version in this update
