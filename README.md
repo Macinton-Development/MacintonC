@@ -1,6 +1,12 @@
 # Macinton C 1.4
 
 
+# Important
+
+## We stopped Windows supportage for some reason
+
+
+
 ## New:
 
 1. BML - Better Markup Language(Using as Python module)
