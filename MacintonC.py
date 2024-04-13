@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, bml
 
 
 #Macinton C
@@ -11,6 +11,7 @@ modules_c = []
 modules_dir = ''
 watchers = []
 watching = {}
+cur_line = ''
 
 def get_args(line:str):
     global watchers, watching
@@ -87,7 +88,7 @@ def define_macinton_h_header(path:str):
     
 
 def compilation(file_path:str, out_file:str, creation:bool):
-    global c_commands, macinton_c_commands, modules_dir, watching
+    global c_commands, macinton_c_commands, modules_dir, watching, cur_line
     is_commented = 0
     is_block = 0
     current_block = ''
@@ -98,20 +99,21 @@ def compilation(file_path:str, out_file:str, creation:bool):
     with open(file_path) as script_reader:
         with open(out_file, 'a') as append_to_out:
             for line in script_reader.readlines():
+                cur_line = line
                 if not is_commented and line.replace('\n', '').replace(' ', '') != '':
                     if line[0] == '@':
                         args = get_args(line.replace('\n', ''))[0]
                         module_load(args[0], args[1])
-                    elif line[0] == '*':
+                    elif line[:5] == 'C_MODE':
                         c_code = not c_code
-                    elif line[0] == '(':
-                        about = get_args(line[1:])[0]
+                    elif line[:5] == 'WATCH':
+                        about = get_args(line[5:])[0]
                         if about[0] not in watching:
                             watching[about[0]] = []
                         watching[about[0]].append([about[1], about[2]])
-                    elif line[0] == ')':
-                        if line[1:].replace('\n', '') in watching:
-                            watching.pop(line[1:].replace('\n', ''))
+                    elif line[:5] == 'CLOSE':
+                        if line[5:].replace('\n', '') in watching:
+                            watching.pop(line[5:].replace('\n', ''))
                     elif c_code:
                         append_to_out.write(line)
                     elif line[0] == '#' and not c_code:
@@ -131,20 +133,20 @@ def compilation(file_path:str, out_file:str, creation:bool):
                         if len(args) - 1 and args[0][0] in watching:
                             for element in watching[args[0][0]]:
                                 append_to_out.write('if(' + args[0][0] + ' == ' + element[0] + '){\n' + element[1] + '();\n}\n')
-                    elif line[0] == '!':
-                        append_to_out.write('#define ' + get_args(line)[0][0] + get_args(line)[0][1] + '\n')
-                    elif line[0] == '~':
-                        append_to_out.write('#undef ' + line[1:] + '\n')
+                    elif line[:3] == 'DEF':
+                        append_to_out.write('#define ' + get_args(line)[0][0] + ' ' + get_args(line)[0][1] + '\n')
+                    elif line[:3] == 'DEL':
+                        append_to_out.write('#undef ' + line[4:] + '\n')
                     elif line[0] == '%':
                         append_to_out.write(f'#include "' + define_macinton_h_header(line[1:].replace("\n", "")) + '"\n')
-                    elif line[0] == '&':
-                        append_to_out.write('#ifdef ' + line[1:].replace("\n", "\n") + '\n')
-                    elif line[0] == '^':
+                    elif line[:4] == 'IDEF':
+                        append_to_out.write('#ifdef ' + line[5:].replace("\n", "\n") + '\n')
+                    elif line[:3] == 'NOT':
                         append_to_out.write('#else\n')
-                    elif line[0] == ';':
+                    elif line[:2] == 'FI':
                         append_to_out.write('#endif\n')
-                    elif line[0] == '/':
-                        append_to_out.write('ifndef ' + line[1:].replace("\n", "") + '\n')
+                    elif line[:5] == 'INDEF':
+                        append_to_out.write('ifndef ' + line[6:].replace("\n", "") + '\n')
                     elif line[:2] == '//':
                         pass
                     elif line[0] == '[':
@@ -163,21 +165,15 @@ def compilation(file_path:str, out_file:str, creation:bool):
 
 if len(sys.argv) > 1:
     if sys.argv[1].lower() != '--help':
-        compilation(sys.argv[1], 'out.c', True)
-        if os.path.getsize('out.c') > 0:
-            name = string_array_sum(sys.argv[1].split('.')[:-1])
-            if len(sys.argv) >= 3:
-                if sys.argv[2] == '?':
-                    name = sys.argv[3]
-            if sys.platform == 'win32':
-                os.system('gcc -o ' + name + '.exe ' + 'out.c')
-            else:
-                os.system('gcc -o' + name + ' out.c')
-            if len(sys.argv) >= 3 and sys.argv[-1].lower() == 'rm':
-                os.remove('out.c')
-                print("No out.c's 0^o?")
-            else:
-                print('# #  ###\n# #  # #\n #   # #\n #   ### check the c code in out.c')
-    else:
-        print('MacintonC 1.3 / Macinton 12\nAdded:\n1.Macroses:\n\t& - #ifdef\n\t^ - #else\n\t; - #endif\n\t/ - #ifndef\n2.Watchers:\n\tAdd - ( : name : value : todo :\n\t\t*todo - equals to ?\n\tDecline - )Name\n3.Headers:\n\tInclude %path/to/header/name.mch\n4.New arguments:\n\t? - out name(without extension)\n\nFixed:\n\t1.Fixed parser\n\nVERSION: 1.3 / 12\nDATE:03/07/2024 - Moscow\n     MM/DD/YYYY   Location\n\nComment: Thanks for using, check new versions on our github!\n\t Thanks to GNU for GCC(which is using in compilation)')
-    
+        try:
+            compilation(sys.argv[1], 'out.c', True)
+            args = bml.get_contents(sys.argv[2])
+            if os.path.getsize('out.c') > 0:
+                os.system(f'gcc -o {args["NAME"][0]} out.c')
+                if args['RM'][0] == 'TRUE':
+                    os.remove('out.c')
+                    print("No out.c's 0^o?")
+                else:
+                    print('# #  ###\n# #  # #\n #   # #\n #   ### check the c code in out.c')                    
+        except:
+            print(f'COMPILATION ERROR: {cur_line}')
