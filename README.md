@@ -1,27 +1,31 @@
-# Macinton C 1.4
+# Macinton C 2.0.α
 
 
 # Important
 
-## We stopped Windows supportage for some reason
+## The sadest news is that Windows Defender marks out compilater as virus
 
 
 
 ## New:
 
-1. BML - Better Markup Language(Using as Python module)
-
-2. BML supportage(using as compilation arguments)
+1. Improved module init script(choosing C header)
 
 
 ## Deleted:
 
-1. Compilation arguments in terminal is over
-
-2. Macinton C Macro is not supported
+1. Windows supporting
 
 ## Fixed:
 
-1. Built in functions
+1. Module loader part - using C header in out.c two times or more times
+
+
+#Upcoming:
+
+1. Constants from configuration file of compilation
+
+2. Function return value as argument
+
 
 # Using GCC in compilation
