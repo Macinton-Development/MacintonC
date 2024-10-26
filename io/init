@@ -1,5 +1,10 @@
-#stdio.h
-#stdlib.h
+;get constants from conf file type bool
+->bool
+;using only modules from constants
+<- : stdio.h : stdio :
+<- : stdlib.h : stdlib :
+;
+;
 print = print.c
 int = int.c
 equ = equ.c
@@ -10,4 +15,7 @@ ELSE = ELSE.c
 IFEL = IFEL.c
 FI = FI.c
 input = input.c
-SYSCALL = syscall.c
+sys = syscall.c
+function = func.c
+;
+;Standart I/O lib for Macinton C
