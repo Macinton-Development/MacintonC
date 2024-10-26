@@ -12,6 +12,7 @@ modules_dir = ''
 watchers = []
 watching = {}
 cur_line = ''
+conf_const = {}
 
 def get_args(line:str):
     global watchers, watching
@@ -60,20 +61,24 @@ def string_array_sum(array:list):
     return out
 
 def module_load(path_to_module_script:str, modules_dir:str, _is_header=False):
-    global c_commands, macinton_c_commands, modules_c, watchers, watching
+    global c_commands, macinton_c_commands, modules_c, watchers, watching, conf_const
+    c_modules_const = {}
+    type_constants = ''
     with open(modules_dir + path_to_module_script) as module_script_reader:
         lines = module_script_reader.readlines()
     for line in lines:
-        if line[0] == '#' and ((module := line[1:].replace('\n', '')) not in modules_c or not _is_header):
+        if line[:2] == '->':
+            type_constants = line.replace('\n', '')[2:]
+        elif (line[:2] == '<-') and ((module := get_args(line.replace('\n', ''))[0])[0] not in modules_c and not _is_header) and (conf_const[module[1]].lower() in ['1', 'true']) and (type_constants == 'bool'):
             if not _is_header:
-                modules_c.append(module)
+                modules_c.append(module[0])
             with open('out.c', 'a') as append_include:
                 if not _is_header:
-                    append_include.write('#include <' + module + '>\n')
+                    append_include.write('#include <' + module[0] + '>\n')
         elif line[0] == ';':
-            watchers.append(line[1:].replace('\n', ''))
+            pass
         else:
-            if not _is_header:
+            if not _is_header and line[:2] != '<-':
                 line = line.split(' = ')
                 macinton_c_commands.append(line[0].replace('\n', ''))
                 with open(modules_dir + line[1].replace('\n', '')) as command_c:
@@ -99,7 +104,7 @@ def compilation(file_path:str, out_file:str, creation:bool):
     with open(file_path) as script_reader:
         with open(out_file, 'a') as append_to_out:
             for line in script_reader.readlines():
-                cur_line = line
+                print(line)
                 if not is_commented and line.replace('\n', '').replace(' ', '') != '':
                     if line[0] == '@':
                         args = get_args(line.replace('\n', ''))[0]
@@ -166,8 +171,11 @@ def compilation(file_path:str, out_file:str, creation:bool):
 if len(sys.argv) > 1:
     if sys.argv[1].lower() != '--help':
         try:
-            compilation(sys.argv[1], 'out.c', True)
             args = bml.get_contents(sys.argv[2])
+            for element in args:
+                if element not in ['NAME', 'RM']:
+                    conf_const[element] = args[element][0]
+            compilation(sys.argv[1], 'out.c', True)
             if os.path.getsize('out.c') > 0:
                 os.system(f'gcc -o {args["NAME"][0]} out.c')
                 if args['RM'][0] == 'TRUE':
@@ -175,5 +183,5 @@ if len(sys.argv) > 1:
                     print("No out.c's 0^o?")
                 else:
                     print('# #  ###\n# #  # #\n #   # #\n #   ### check the c code in out.c')                    
-        except:
-            print(f'COMPILATION ERROR: {cur_line}')
+        except Exception as e:
+            print(f'COMPILATION ERROR: {cur_line}       {e}')
