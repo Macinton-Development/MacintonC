@@ -10,7 +10,7 @@
 ## New:
 
 1. Improved module init script(choosing C header)
-2. Constants from configuration file of compilation
+2. Constants from configuration file of compilation and from module init files
 3. Choosing C compiler
 
 
