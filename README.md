@@ -17,9 +17,10 @@
 ## Fixed:
 
 1. Module loader part - using C header in out.c two times or more times
+2. Watchers closing bug
 
 
-#Upcoming:
+# Upcoming:
 
 1. Function return value as argument
 
